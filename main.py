@@ -10,7 +10,8 @@ import torch.nn.functional as F
 import numpy as np
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
-from torch.nn.utils import clip_grad_norm
+# from torch.nn.utils import clip_grad_norm
+from torch.nn.utils import clip_grad_norm_ as clip_grad_norm
 from time import time
 from tqdm import tqdm
 
@@ -77,7 +78,8 @@ def eval(net,vocab,data_iter,criterion):
             targets = targets.cuda()
         probs = net(features,doc_lens)
         loss = criterion(probs,targets)
-        total_loss += loss.data[0]
+        # total_loss += loss.data[0]
+        total_loss += loss.data.item()
         batch_num += 1
     loss = total_loss / batch_num
     net.train()
@@ -140,7 +142,8 @@ def train():
             clip_grad_norm(net.parameters(), args.max_norm)
             optimizer.step()
             if args.debug:
-                print('Batch ID:%d Loss:%f' %(i,loss.data[0]))
+                # print('Batch ID:%d Loss:%f' %(i,loss.data[0]))
+                print('Batch ID:%d Loss:%f' %(i,loss.data.item()))
                 continue
             if i % args.report_every == 0:
                 cur_loss = eval(net,vocab,val_iter,criterion)

@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+# import torch.nn.functional as F
 from torch.autograd import Variable
 
 class Attention(nn.Module):
@@ -54,7 +54,7 @@ class Attention(nn.Module):
         attn = torch.bmm(query, context.transpose(1, 2))
         if self.mask is not None:
             attn.data.masked_fill_(self.mask, -float('inf'))
-        attn_scores = F.softmax(attn.view(-1, in_len),dim=1).view(batch_size, -1, in_len)
+        attn_scores = torch.softmax(attn.view(-1, in_len),dim=1).view(batch_size, -1, in_len)
 
         # (batch, query_len, in_len) * (batch, in_len, dim) -> (batch, query_len, dim)
         attn_out = torch.bmm(attn_scores, context)

@@ -70,7 +70,7 @@ class CNN_RNN(BasicModule):
         for index,t in enumerate(x):
             t = t[:seq_lens[index],:]
             t = torch.t(t).unsqueeze(0)
-            out.append(F.avg_pool1d(t,t.size(2)))
+            out.append(torch.avg_pool1d(t,t.size(2)))
         
         out = torch.cat(out).squeeze(2)
         return out
@@ -113,10 +113,10 @@ class CNN_RNN(BasicModule):
                 # classification layer
                 content = self.content(h) 
                 salience = self.salience(h,doc)
-                novelty = -1 * self.novelty(h,F.tanh(s))
+                novelty = -1 * self.novelty(h,torch.tanh(s))
                 abs_p = self.abs_pos(abs_features)
                 rel_p = self.rel_pos(rel_features)
-                prob = F.sigmoid(content + salience + novelty + abs_p + rel_p + self.bias)
+                prob = torch.sigmoid(content + salience + novelty + abs_p + rel_p + self.bias)
                 s = s + torch.mm(prob,h)
                 probs.append(prob)
         return torch.cat(probs).squeeze()

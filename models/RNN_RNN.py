@@ -60,7 +60,7 @@ class RNN_RNN(BasicModule):
         for index,t in enumerate(x):
             t = t[:seq_lens[index],:]
             t = torch.t(t).unsqueeze(0)
-            out.append(F.avg_pool1d(t,t.size(2)))
+            out.append(torch.avg_pool1d(t,t.size(2)))
         
         out = torch.cat(out).squeeze(2)
         return out
@@ -82,7 +82,7 @@ class RNN_RNN(BasicModule):
         probs = []
         for index,doc_len in enumerate(doc_lens):
             valid_hidden = sent_out[index,:doc_len,:]                            # (doc_len,2*H)
-            doc = F.tanh(self.fc(docs[index])).unsqueeze(0)
+            doc = torch.tanh(self.fc(docs[index])).unsqueeze(0)
             s = Variable(torch.zeros(1,2*H))
             if self.args.device is not None:
                 s = s.cuda()
@@ -103,10 +103,10 @@ class RNN_RNN(BasicModule):
                 # classification layer
                 content = self.content(h) 
                 salience = self.salience(h,doc)
-                novelty = -1 * self.novelty(h,F.tanh(s))
+                novelty = -1 * self.novelty(h,torch.tanh(s))
                 abs_p = self.abs_pos(abs_features)
                 rel_p = self.rel_pos(rel_features)
-                prob = F.sigmoid(content + salience + novelty + abs_p + rel_p + self.bias)
+                prob = torch.sigmoid(content + salience + novelty + abs_p + rel_p + self.bias)
                 s = s + torch.mm(prob,h)
                 probs.append(prob)
         return torch.cat(probs).squeeze()
